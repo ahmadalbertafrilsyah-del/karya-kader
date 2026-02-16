@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Tambahan untuk UploadThing (biarkan jika ada) */
+@import "@uploadthing/react/styles.css";
+
+/* Style tambahan manual bisa ditaruh di bawah sini, tapi harus bahasa CSS */
+html, body {
+  height: 100%;
+}

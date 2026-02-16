@@ -1,0 +1,127 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  username String  @unique
+  password String
+  nama     String?
+  role     String  @default("USER")
+  posts    Post[]
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  nama  String
+  slug  String @unique
+  posts Post[]
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  image     String?
+  slug      String   @unique @default(cuid())
+  
+  // --- METRIK & STATUS ---
+  views     Int      @default(0)
+  status    String   @default("published")
+  published Boolean  @default(true)
+
+  // --- KREDIT REDAKSI & INFO TAMBAHAN (BARU) ---
+  kota       String?  // Untuk Dateline (Contoh: "Malang - ")
+  tags       String?  // Untuk Tags (Contoh: "Politik, Kampus")
+  
+  penulis    String?
+  editor     String?  // Ganti/Tambah dari redaktur
+  fotografer String?  // Baru
+  sumber     String?
+  lokasi     String?  // Opsional (cadangan)
+
+  // --- RELASI KE USER (ADMIN) ---
+  author     User     @relation(fields: [authorId], references: [id])
+  authorId   Int
+  
+  // --- KATEGORI ---
+  categoryId Int?
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // --- RELASI KOMENTAR ---
+  comments   Comment[]
+}
+
+// --- KOMENTAR ---
+model Comment {
+  id        Int      @id @default(autoincrement())
+  name      String   // Disesuaikan jadi 'name' (sebelumnya 'nama') agar cocok dgn API
+  email     String
+  content   String   // Disesuaikan jadi 'content' (sebelumnya 'isi') agar cocok dgn API
+  status    String   @default("pending") // pending/approved/spam
+  createdAt DateTime @default(now())
+  
+  postId    Int
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+// --- TABEL PENGATURAN WEB ---
+model WebConfig {
+  id              Int     @id @default(autoincrement())
+  namaWeb         String  @default("PR. PMII KAWAH CHONDRODIMUKO")
+  deskripsiFooter String?
+  alamat          String?
+  logoFooter      String?
+  email           String?
+  telepon         String?
+  
+  // Sosmed & Kontak
+  instagram       String?
+  tiktok          String?
+  youtube         String?
+  linkedin        String?
+  whatsapp        String?
+}
+
+// TABEL AGENDA KEGIATAN
+model Agenda {
+  id        Int      @id @default(autoincrement())
+  judul     String   // Nama Kegiatan
+  tanggal   DateTime // Waktu Pelaksanaan
+  lokasi    String?  // Tempat (Opsional)
+  createdAt DateTime @default(now())
+}
+
+// TABEL PAMFLET
+model Pamphlet {
+  id        Int      @id @default(autoincrement())
+  url       String   // Link gambar
+  createdAt DateTime @default(now())
+}
+
+// Model untuk Tim Redaksi / Pengurus
+model TeamMember {
+  id        Int      @id @default(autoincrement())
+  nama      String
+  jabatan   String
+  foto      String   // URL Gambar
+  createdAt DateTime @default(now())
+}
+
+// Tambahkan di prisma/schema.prisma
+model Poster {
+  id        Int      @id @default(autoincrement())
+  imageUrl  String   // Link gambar dari UploadThing
+  createdAt DateTime @default(now())
+}
