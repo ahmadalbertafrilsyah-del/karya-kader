@@ -156,7 +156,7 @@ export default async function Footer() {
         <div className="border-t border-gray-800 pt-6 md:pt-8 flex flex-col md:flex-row justify-between items-center gap-2 md:gap-4 text-center md:text-left">
           {/* FIX: Copyright sangat kecil di HP biar muat 1 baris */}
           <p className="text-gray-500 text-[10px] md:text-xs">
-            © {new Date().getFullYear()} <span className="text-[#f5a623]">Karya Kader</span>. All rights reserved.
+            © {new Date().getFullYear()} <span className="text-[#f5a623]">LSO Jurnalistik Penelitian dan Pengembangan</span>. All rights reserved.
           </p>
           <p className="text-gray-600 text-[9px] md:text-[10px] uppercase tracking-widest">
             PR. PMII "Kawah" Chondrodimuko
