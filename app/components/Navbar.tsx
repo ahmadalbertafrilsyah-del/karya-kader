@@ -1,18 +1,24 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import SearchBar from './SearchBar'; 
-import NavMobile from './NavMobile'; // <-- Import komponen baru tadi
+import NavMobile from './NavMobile'; 
 
 export default async function Navbar() {
-  // 1. AMBIL DATA DARI DB
+  // 1. AMBIL DATA KONFIGURASI WEB
   const config = await prisma.webConfig.findFirst();
+
+  // 2. AMBIL KATEGORI DARI DATABASE
   const categories = await prisma.category.findMany({
     take: 6,
     orderBy: { nama: 'asc' }
   });
 
+  // 3. FORMAT TANGGAL HARI INI (Real Time)
   const today = new Date().toLocaleDateString('id-ID', {
-    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    weekday: 'long', 
+    day: 'numeric', 
+    month: 'long', 
+    year: 'numeric'
   });
 
   return (
@@ -20,31 +26,38 @@ export default async function Navbar() {
       
       {/* === 1. TOP BAR (INFO & SOSMED) === */}
       <div className="bg-[#091c3e] text-white text-[10px] md:text-xs py-2 border-b border-white/10">
-        <div className="container mx-auto px-4 flex justify-between items-center">
+        <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-2 md:gap-0">
           
-          {/* Kiri: Tanggal (Hidden di HP sangat kecil) */}
+          {/* Kiri: Tanggal (DITAMPILKAN LAGI SESUAI REQUEST) */}
           <div className="flex items-center gap-2 opacity-90">
-            <span className="hidden xs:inline">🗓️ {today}</span>
-            {/* Tampilan alternatif untuk HP kecil */}
-            <span className="xs:hidden">🗓️ Portal Kader</span>
+            <span>🗓️ {today}</span>
           </div>
 
           {/* Kanan: Sosmed */}
           <div className="flex items-center gap-3 md:gap-5">
             <span className="hidden md:inline opacity-70 font-medium">Ikuti Kami:</span>
             <div className="flex gap-3 md:gap-4">
-              {/* Icon Instagram */}
+              
+              {/* Instagram */}
               <a href={config?.instagram || "#"} target="_blank" className="hover:text-[#f5a623] transition transform hover:scale-110">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
               </a>
-              {/* Icon Youtube */}
+
+              {/* Youtube */}
               <a href={config?.youtube || "#"} target="_blank" className="hover:text-[#f5a623] transition transform hover:scale-110">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
               </a>
-              {/* Icon TikTok */}
+
+              {/* TikTok */}
               <a href={config?.tiktok || "#"} target="_blank" className="hover:text-[#f5a623] transition transform hover:scale-110">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
               </a>
+
+              {/* LINKEDIN (DIKEMBALIKAN SESUAI REQUEST) */}
+              <a href={config?.linkedin || "#"} target="_blank" className="hover:text-[#f5a623] transition transform hover:scale-110">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+              </a>
+
             </div>
           </div>
         </div>
@@ -79,7 +92,7 @@ export default async function Navbar() {
                   </div>
                </Link>
 
-               {/* Tombol Hamburger (Mobile Only) - Dipindah kesini agar sejajar Logo */}
+               {/* Tombol Hamburger (Mobile Only) */}
                <div className="md:hidden">
                   <NavMobile categories={categories} />
                </div>
@@ -94,13 +107,13 @@ export default async function Navbar() {
         </div>
       </div>
 
-      {/* === 3. NAVIGATION MENU (DESKTOP) === */}
-      {/* Hidden di HP (md:block), karena di HP sudah pakai NavMobile diatas */}
+      {/* === 3. NAVIGATION MENU (DESKTOP ONLY) === */}
+      {/* Menu ini akan hilang di HP (md:hidden), digantikan NavMobile di atas */}
       <div className="hidden md:block bg-[#091c3e] border-t-4 border-[#f5a623] shadow-lg">
         <div className="container mx-auto px-4">
            <ul className="flex flex-wrap justify-start gap-x-8 text-white text-sm font-bold uppercase py-4 tracking-wider">
              
-             {/* Menu Desktop */}
+             {/* Menu Statis */}
              <li>
                <Link href="/" className="hover:text-[#f5a623] transition relative group py-2">
                  Beranda
@@ -108,6 +121,7 @@ export default async function Navbar() {
                </Link>
              </li>
 
+             {/* Loop Kategori */}
              {categories.map((cat) => (
                <li key={cat.id}>
                  <Link href={`/category/${cat.slug}`} className="hover:text-[#f5a623] transition relative group py-2">
@@ -117,6 +131,7 @@ export default async function Navbar() {
                </li>
              ))}
 
+             {/* Menu Statis */}
              <li>
                <Link href="/tentang-kami" className="hover:text-[#f5a623] transition relative group py-2">
                  Tentang Kami
